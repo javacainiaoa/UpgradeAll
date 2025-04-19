@@ -145,19 +145,19 @@ jobs:
           echo "$TELEGRAM_MESSAGE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Send commit to Telegram
-        if: ${{ !github.event.pull_request }}
-        uses: xz-dev/TelegramFileUploader@v1.1.1
-        env:
-          BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          API_ID: ${{ secrets.TELEGRAM_API_ID }}
-          API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
-        with:
-          to-who: ${{ secrets.TELEGRAM_TO }}
-          message: ${{ env.TELEGRAM_MESSAGE }}
-          files: |
-            /github/workspace/${{ steps.sign.outputs.signedReleaseFile }}
-            /github/workspace/${{ env.DEBUG_APK }}
+#      - name: Send commit to Telegram
+#        if: ${{ !github.event.pull_request }}
+#        uses: xz-dev/TelegramFileUploader@v1.1.1
+#        env:
+#          BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+#          API_ID: ${{ secrets.TELEGRAM_API_ID }}
+#          API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+#        with:
+#          to-who: ${{ secrets.TELEGRAM_TO }}
+#          message: ${{ env.TELEGRAM_MESSAGE }}
+#          files: |
+#            /github/workspace/${{ steps.sign.outputs.signedReleaseFile }}
+#            /github/workspace/${{ env.DEBUG_APK }}
 
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@main
