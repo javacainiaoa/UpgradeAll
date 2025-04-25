@@ -7,10 +7,29 @@ import net.xzos.upgradeall.core.module.app.version.AssetWrapper
 import net.xzos.upgradeall.core.module.app.version.Version
 import net.xzos.upgradeall.core.module.app.version.VersionWrapper
 import net.xzos.upgradeall.core.utils.coroutines.ValueMutexMap
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 
 internal object DataGetter {
 
     private val lockMap = ValueMutexMap()
+    private val httpClient = HttpClient()
+
+    // 新增方法：从 GitHub 获取最新版本
+    suspend fun getLatestGitHubVersion(repoOwner: String, repoName: String): String? {
+        try {
+            val response = httpClient.get("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
+            if (response.status == HttpStatusCode.OK) {
+                val json = response.body<Map<String, Any>>()
+                return json["tag_name"] as? String
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
 
     fun getLatestVersion(app: App, hub: Hub): Version? {
         var appList: Collection<App> = emptySet()

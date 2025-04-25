@@ -42,10 +42,55 @@ class UpdateWorker(context: Context, workerParameters: WorkerParameters) :
         }
 
         suspend fun doUpdateWork(updateNotification: UpdateNotification) {
+            // 假设这里添加版本类型判断逻辑
+            val versionType = getVersionType() // 自定义函数，用于获取版本类型
+            when (versionType) {
+                "pre" -> updateForPreVersion(updateNotification)
+                "beta" -> updateForBetaVersion(updateNotification)
+                else -> AppManager.renewApp(
+                    updateNotification.renewStatusFun,
+                    updateNotification.recheckStatusFun
+                )
+            }
+        }
+
+        private suspend fun updateForPreVersion(updateNotification: UpdateNotification) {
+            // 处理 pre 版本更新的逻辑
             AppManager.renewApp(
                 updateNotification.renewStatusFun,
                 updateNotification.recheckStatusFun
             )
+            // 可以添加额外的 pre 版本更新逻辑
+        }
+
+        private suspend fun updateForBetaVersion(updateNotification: UpdateNotification) {
+            // 处理 beta 版本更新的逻辑
+            AppManager.renewApp(
+                updateNotification.renewStatusFun,
+                updateNotification.recheckStatusFun
+            )
+            // 可以添加额外的 beta 版本更新逻辑
+        }
+
+        private fun getVersionType(): String {
+            // 实现获取版本类型的逻辑，这里只是示例
+            // 获取最新应用信息
+            val latestApp = AppManager.getAppList().firstOrNull()
+            if (latestApp != null) {
+                val latestVersion = DataGetter.getLatestVersion(latestApp)
+                if (latestVersion != null) {
+                    // 这里可以根据最新版本信息分析版本类型
+                    // 示例：简单根据版本号是否包含特定字符串判断版本类型
+                    val versionType = if (latestVersion.versionNumber.contains("beta")) {
+                        "Beta 版本"
+                    } else {
+                        "正式版本"
+                    }
+                    // 可以在这里处理版本类型，例如记录日志或更新通知
+                    println("最新版本类型: $versionType")
+                }
+            }
+            return "stable" // 根据实际情况返回 "pre", "beta" 或其他值
         }
 
         fun finishNotify(updateNotification: UpdateNotification) {
